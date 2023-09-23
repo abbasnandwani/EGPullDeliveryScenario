@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.BusinessEventsService"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Consumer", "Demo.Consumer\Demo.Consumer.csproj", "{4EF65DD1-D03B-4B66-931A-35CA36C5849E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Items", "Items", "{16453C47-EE7C-40C1-910D-B34BF4980BD9}"
+	ProjectSection(SolutionItems) = preProject
+		Protofile\TransactionEvents.proto = Protofile\TransactionEvents.proto
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

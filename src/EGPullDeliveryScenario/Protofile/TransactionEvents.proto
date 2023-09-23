@@ -9,7 +9,7 @@ package TransactionEvent;
 
 // The greeting service definition.
 service TransactionEvents {
-  rpc GetTransactionStream (google.protobuf.Empty) returns (stream TransactionEventData);
+  rpc GetTransactionStream (EventRequestSetting) returns (stream TransactionEventData);
 }
 
 message TransactionEventData {
@@ -17,5 +17,10 @@ message TransactionEventData {
   string clientid = 2;
   double amount = 3;
   google.protobuf.Timestamp transactionDateTime = 4;
+  
+}
+
+message EventRequestSetting {
+  int32 maxEvents = 1;
   
 }
