@@ -1,4 +1,7 @@
+using Demo.BusinessEventsService.Models;
 using Demo.BusinessEventsService.Services;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 namespace Demo.BusinessEventsService
 {
@@ -12,7 +15,15 @@ namespace Demo.BusinessEventsService
             builder.Services.AddControllersWithViews();
             builder.Services.AddGrpc(); //add grpc services
 
+            // Add Sqlite database
+            var sqliteConn = new SqliteConnection("Filename=:memory:");
+            sqliteConn.Open();
+            builder.Services.AddDbContext<BusinessEventsContext>
+                (options => options.UseSqlite(sqliteConn));
+
             var app = builder.Build();
+
+            InitializeDummyData(app);
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -36,6 +47,27 @@ namespace Demo.BusinessEventsService
             app.MapGrpcService<TransactionService>(); //map grpc service
 
             app.Run();
+        }
+
+
+        private static void InitializeDummyData(WebApplication app)
+        {
+            var scope = app.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<BusinessEventsContext>();
+
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
+
+            List<Client> clients = new List<Client>();
+
+            clients.Add(new Client { Id = 1, Name = "Client 1" });
+            clients.Add(new Client { Id = 2, Name = "Client 2" });
+            clients.Add(new Client { Id = 3, Name = "Client 3" });
+            clients.Add(new Client { Id = 4, Name = "Client 4" });
+
+            db.Clients.AddRange(clients);
+
+            db.SaveChanges();
         }
     }
 }

@@ -1,0 +1,22 @@
+﻿@model List<Demo.BusinessEventsService.Models.Client>
+
+@{
+    ViewData["Title"] = "View Clients";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <table>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+        </tr>
+        @foreach (var client in Model)
+        {
+            <tr>
+                <td>@client.Id</td>
+                <td>@client.Name</td>
+            </tr>
+        }
+    </table>
+</div>

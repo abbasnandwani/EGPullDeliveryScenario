@@ -1,8 +1,33 @@
-﻿@{
+﻿@model IndexViewModel
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-left">
+    <h1 class="display-4">Demo</h1>
+
+    <p><b>Raise Event Form</b></p>
+    <form method="post">
+        <table>
+            <tr>
+                <td>@Html.LabelFor(m => m.ClientId)</td>
+                <td>@Html.DropDownListFor(m => m.ClientId, (IEnumerable<SelectListItem>) ViewBag.ListClients)</td>
+            </tr>
+            <tr>
+                <td> @Html.LabelFor(m => m.Amount)</td>
+                <td>@Html.TextBoxFor(m => m.Amount)</td>
+            </tr>
+            <tr>
+                <td> @Html.LabelFor(m => m.GenerateRandom)</td>
+                <td>@Html.CheckBoxFor(m => m.GenerateRandom)</td>
+            </tr>
+            <tr>
+                <td> @Html.LabelFor(m => m.NumberOfTransactions)</td>
+                <td>@Html.TextBoxFor(m => m.NumberOfTransactions)</td>
+            </tr>
+
+            <tr><td colspan="2"><input type="submit" value="Raise Event" /></td></tr>
+        </table>
+    </form>
 </div>
