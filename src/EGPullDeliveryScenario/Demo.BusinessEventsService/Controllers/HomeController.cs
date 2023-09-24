@@ -90,12 +90,15 @@ namespace Demo.BusinessEventsService.Controllers
              .Where(t => t.EventDispatched == false)
              .OrderBy(t => t.TransactionDateTime)
              .Take(numevents);
-            
+
             var i = 0;
-            while (i < numevents)
+            foreach (var clientTransaction in clientTransactions)
             {
-                var clientTransaction = clientTransactions.Take(1).FirstOrDefault();
-              
+                if (i >= numevents)
+                {
+                    break;
+                }
+
                 var transaction = new TransactionEventData
                 {
                     TransactionDateTime = Timestamp.FromDateTime(DateTime.SpecifyKind(clientTransaction.TransactionDateTime, DateTimeKind.Utc)),
@@ -105,7 +108,12 @@ namespace Demo.BusinessEventsService.Controllers
                 };
 
                 model.Add(transaction);
-            }
+
+                clientTransaction.EventDispatched = true;
+                _dbContext.SaveChanges();
+                i++;
+            }   
+                       
 
             return View(model);
         }

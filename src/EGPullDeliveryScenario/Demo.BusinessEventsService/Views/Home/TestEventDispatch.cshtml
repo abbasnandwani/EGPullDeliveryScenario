@@ -11,16 +11,15 @@
             <th>Id</th>
             <th>Client Id</th>
             <th>Amount</th>
-            <th>Transaction Date Time</th>
-            <th>Event Dispatched</th>
+            <th>Transaction Date Time</th>            
         </tr>
         @foreach (var tran in Model)
         {
             <tr>
-                <td>@tran.Clientid</td>
-                <td>@tran.Amount</td>
                 <td>@tran.Transactionid</td>
-                <td>@tran.TransactionDateTime</td>                
+                <td>@tran.Clientid</td>
+                <td>@tran.TransactionDateTime.ToDateTime()</td>
+
             </tr>
         }
     </table>
