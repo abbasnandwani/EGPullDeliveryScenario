@@ -17,7 +17,7 @@ namespace Demo.BusinessEventsService.Services
 
         public override async Task GetTransactionStream(EventRequestSetting requestSetting, IServerStreamWriter<TransactionEventData> responseStream,
             ServerCallContext context)
-        {            
+        {
             var transactions = _dbContext.ClientTransactions.ToList();
 
             var clientTransactions = _dbContext.ClientTransactions
@@ -38,7 +38,8 @@ namespace Demo.BusinessEventsService.Services
                     TransactionDateTime = Timestamp.FromDateTime(DateTime.SpecifyKind(clientTransaction.TransactionDateTime, DateTimeKind.Utc)),
                     Transactionid = clientTransaction.TransactionId,
                     Clientid = clientTransaction.ClientId.ToString(),
-                    Amount = clientTransaction.Amount
+                    Amount = clientTransaction.Amount,
+                    EventSource = (clientTransaction.ClientId == 3) ? "Demo.NonBusinessEvent" : "Demo.BusinessEvent"
                 };
 
                 clientTransaction.EventDispatched = true;

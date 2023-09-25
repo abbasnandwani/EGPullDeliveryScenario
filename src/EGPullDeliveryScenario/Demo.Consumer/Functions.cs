@@ -23,7 +23,7 @@ namespace Demo.Consumer
     public class Functions
     {
         [FunctionName("EventOrchestrator")]
-        public async Task EventOrchestrator([TimerTrigger("* */1 * * * *")] TimerInfo myTimer,
+        public async Task EventOrchestrator([TimerTrigger("*/10 * * * * *")] TimerInfo myTimer,
             [Blob("eventfiles", Connection = "BLOB_CONNSTR")] BlobContainerClient blobContainerClient,
             ILogger log)
         {
@@ -46,14 +46,14 @@ namespace Demo.Consumer
 
             //create evetn grid client
             EventGridClient egClient = new EventGridClient(new Uri(topicEndpoint), new AzureKeyCredential(topicKey));
-                        
+
             //create event request setting
             TransactionEvent.EventRequestSetting requestSetting = new TransactionEvent.EventRequestSetting
             {
                 MaxEvents = 2
             };
 
-            log.LogInformation($"Fetching max {requestSetting.MaxEvents} events");
+            log.LogInformation($"Fetching max {requestSetting.MaxEvents} events from service endpoint");
 
             using var streamingCall = client.GetTransactionStream(requestSetting, cancellationToken: cts.Token);
 
@@ -61,7 +61,7 @@ namespace Demo.Consumer
             {
                 await foreach (var transactionEventData in streamingCall.ResponseStream.ReadAllAsync(cancellationToken: cts.Token))
                 {
-                    log.LogInformation($"Tran Datetime: {transactionEventData.TransactionDateTime.ToDateTime():s} | TranId: {transactionEventData.Transactionid} | Amount: {transactionEventData.Amount} ");
+                    log.LogInformation($"Tran Datetime: {transactionEventData.TransactionDateTime.ToDateTime():s} | Event Source: {transactionEventData.EventSource}");
 
                     string jsonPayload = JsonConvert.SerializeObject(transactionEventData);
 
@@ -76,7 +76,8 @@ namespace Demo.Consumer
                     info.FileName = filename;
                     info.TransactionId = transactionEventData.Transactionid;
 
-                    CloudEvent cloudEvent = new CloudEvent("Demo.BusinessEvent", "Business.Event", info);
+                    //CloudEvent cloudEvent = new CloudEvent("Demo.BusinessEvent", "Business.Event", info);
+                    CloudEvent cloudEvent = new CloudEvent(transactionEventData.EventSource, "Business.Event", info);
                     await egClient.PublishCloudEventAsync(topicName, cloudEvent);
                 }
             }
@@ -89,7 +90,7 @@ namespace Demo.Consumer
         }
 
         [FunctionName("EventGridPullScheduleTrigger")]
-        public static async Task EventGridPullScheduleTrigger([TimerTrigger("*/10 * * * * *")] TimerInfo myTimer,
+        public static async Task EventGridPullScheduleTrigger([TimerTrigger("*/20 * * * * *")] TimerInfo myTimer,
              [Blob("eventfiles", Connection = "BLOB_CONNSTR")] BlobContainerClient blobContainerClient,
              ILogger log)
         {
@@ -120,44 +121,55 @@ namespace Demo.Consumer
             {
                 CloudEvent @event = detail.Event;
                 BrokerProperties brokerProperties = detail.BrokerProperties;
-                Console.WriteLine(@event.Data.ToString());
+                log.LogInformation($"Event Details: {@event.Data.ToString()}");
 
                 // The lock token is used to acknowledge, reject or release the event
                 Console.WriteLine(brokerProperties.LockToken);
 
+                //acknowledge the event
                 AcknowledgeResult acknowledgeResult = await client.AcknowledgeCloudEventsAsync(topicName, subscription, new string[] { brokerProperties.LockToken });
 
                 // Inspect the Acknowledge result
-                Console.WriteLine($"Failed count for Acknowledge: {acknowledgeResult.FailedLockTokens.Count}");
-                foreach (FailedLockToken failedLockToken in acknowledgeResult.FailedLockTokens)
+                if (acknowledgeResult.SucceededLockTokens.Count > 0)
                 {
-                    Console.WriteLine($"Lock Token: {failedLockToken.LockToken}");
-                    Console.WriteLine($"Error Code: {failedLockToken.ErrorCode}");
-                    Console.WriteLine($"Error Description: {failedLockToken.ErrorDescription}");
+                    log.LogInformation($"Success count for Acknowledge: {acknowledgeResult.SucceededLockTokens.Count}");
+                    foreach (string lockToken in acknowledgeResult.SucceededLockTokens)
+                    {
+                        log.LogInformation($"Lock Token: {lockToken}");
+                    }
+
+                }
+                else
+                {
+                    log.LogInformation($"Failed count for Acknowledge: {acknowledgeResult.FailedLockTokens.Count}");
+                    foreach (FailedLockToken failedLockToken in acknowledgeResult.FailedLockTokens)
+                    {
+                        log.LogInformation($"Lock Token: {failedLockToken.LockToken}");
+                        log.LogInformation($"Error Code: {failedLockToken.ErrorCode}");
+                        log.LogInformation($"Error Description: {failedLockToken.ErrorDescription}");
+                    }
                 }
 
-                Console.WriteLine($"Success count for Acknowledge: {acknowledgeResult.SucceededLockTokens.Count}");
-                foreach (string lockToken in acknowledgeResult.SucceededLockTokens)
-                {
-                    Console.WriteLine($"Lock Token: {lockToken}");
-                }
 
                 //deserialize event data
                 var info = JsonConvert.DeserializeObject<EventInfo>(@event.Data.ToString());
 
                 var blob = blobContainerClient.GetBlobClient(info.FileName);
 
-                if(blob.Exists())
+                if (blob.Exists())
                 {
                     var blobResult = await blobContainerClient.GetBlobClient(info.FileName).DownloadContentAsync();
 
-                    var dynObj = JsonConvert.DeserializeObject<dynamic>(blobResult.Value.Content.ToString());
+                    var transactionInfo = JsonConvert.DeserializeObject<TransactionInfo>(blobResult.Value.Content.ToString());
 
-                    Console.WriteLine($"File Contents: {blobResult.Value.Content.ToString()}");
+                    log.LogInformation($"File Contents:\n ClientId: {transactionInfo.ClientId}" +
+                        $"\nTransactionId: {transactionInfo.TransactionId}" +
+                        $"\nAmount: {transactionInfo.Amount}" +
+                        $"\nTransactionDateTime: {transactionInfo.TransactionDateTime}");
                 }
                 else
                 {
-                    Console.WriteLine($"Payload: {info.FileName} not found.");
+                    log.LogInformation($"Payload: {info.FileName} not found.");
                 }
 
             }
