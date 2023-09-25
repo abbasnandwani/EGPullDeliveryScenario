@@ -14,13 +14,16 @@ using Azure.Messaging.EventGrid;
 using Azure.Messaging.EventGrid.Namespaces;
 using Azure;
 using Azure.Messaging;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.VisualBasic;
 
 namespace Demo.Consumer
 {
     public class Functions
     {
         [FunctionName("EventOrchestrator")]
-        public async Task EventOrchestrator([TimerTrigger("*/5 * * * * *")] TimerInfo myTimer,
+        public async Task EventOrchestrator([TimerTrigger("* */1 * * * *")] TimerInfo myTimer,
             [Blob("eventfiles", Connection = "BLOB_CONNSTR")] BlobContainerClient blobContainerClient,
             ILogger log)
         {
@@ -35,7 +38,7 @@ namespace Demo.Consumer
             using var channel = GrpcChannel.ForAddress(serviceApiEndPoint);
             var client = new TransactionEventsClient(channel);
 
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
 
             //create blob container if does not exists
@@ -84,11 +87,82 @@ namespace Demo.Consumer
 
             log.LogInformation($"Fetching events complete.");
         }
-    }
 
-    public class EventInfo
-    {
-        public string TransactionId { get; set; }
-        public string FileName { get; set; }
+        [FunctionName("EventGridPullScheduleTrigger")]
+        public static async Task EventGridPullScheduleTrigger([TimerTrigger("*/10 * * * * *")] TimerInfo myTimer,
+             [Blob("eventfiles", Connection = "BLOB_CONNSTR")] BlobContainerClient blobContainerClient,
+             ILogger log)
+        {
+            log.LogInformation($"EventGridPullScheduleTrigger Triggered at {DateTime.Now}");
+
+            string topicEndpoint = Environment.GetEnvironmentVariable("AEG_TOPIC_ENDPOINT");
+            string topicKey = Environment.GetEnvironmentVariable("AEG_TOPIC_KEY");
+            string topicName = Environment.GetEnvironmentVariable("AEG_TOPIC_NAME");
+            string subscription = Environment.GetEnvironmentVariable("AEG_TOPIC_SUBSCRIPTION");
+
+            // Construct the client using an Endpoint for a namespace as well as the access key
+            var client = new EventGridClient(new Uri(topicEndpoint), new AzureKeyCredential(topicKey));
+
+            // Receive the published CloudEvents
+            log.LogInformation($"Pulling events....");
+            var resultRes = await client.ReceiveCloudEventsAsync(topicName, subscription, 2, TimeSpan.FromSeconds(20)); //receive 2 events at a time
+            ReceiveResult result = resultRes.Value;
+
+            Console.WriteLine("Received Response");
+
+            // handle received messages. Define these variables on the top.
+
+            var toAcknowledge = new List<string>();
+
+            // Iterate through the results and collect the lock tokens for events we want to release/acknowledge/result
+
+            foreach (ReceiveDetails detail in result.Value)
+            {
+                CloudEvent @event = detail.Event;
+                BrokerProperties brokerProperties = detail.BrokerProperties;
+                Console.WriteLine(@event.Data.ToString());
+
+                // The lock token is used to acknowledge, reject or release the event
+                Console.WriteLine(brokerProperties.LockToken);
+
+                AcknowledgeResult acknowledgeResult = await client.AcknowledgeCloudEventsAsync(topicName, subscription, new string[] { brokerProperties.LockToken });
+
+                // Inspect the Acknowledge result
+                Console.WriteLine($"Failed count for Acknowledge: {acknowledgeResult.FailedLockTokens.Count}");
+                foreach (FailedLockToken failedLockToken in acknowledgeResult.FailedLockTokens)
+                {
+                    Console.WriteLine($"Lock Token: {failedLockToken.LockToken}");
+                    Console.WriteLine($"Error Code: {failedLockToken.ErrorCode}");
+                    Console.WriteLine($"Error Description: {failedLockToken.ErrorDescription}");
+                }
+
+                Console.WriteLine($"Success count for Acknowledge: {acknowledgeResult.SucceededLockTokens.Count}");
+                foreach (string lockToken in acknowledgeResult.SucceededLockTokens)
+                {
+                    Console.WriteLine($"Lock Token: {lockToken}");
+                }
+
+                //deserialize event data
+                var info = JsonConvert.DeserializeObject<EventInfo>(@event.Data.ToString());
+
+                var blob = blobContainerClient.GetBlobClient(info.FileName);
+
+                if(blob.Exists())
+                {
+                    var blobResult = await blobContainerClient.GetBlobClient(info.FileName).DownloadContentAsync();
+
+                    var dynObj = JsonConvert.DeserializeObject<dynamic>(blobResult.Value.Content.ToString());
+
+                    Console.WriteLine($"File Contents: {blobResult.Value.Content.ToString()}");
+                }
+                else
+                {
+                    Console.WriteLine($"Payload: {info.FileName} not found.");
+                }
+
+            }
+
+            log.LogInformation($"Pulling events - Complete....");
+        }
     }
 }

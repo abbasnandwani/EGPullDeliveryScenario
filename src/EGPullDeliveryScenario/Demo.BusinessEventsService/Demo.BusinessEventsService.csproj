@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Protos\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Protobuf Include="..\Protofile\TransactionEvents.proto" GrpcServices="Server">
       <Link>Protos\TransactionEvents.proto</Link>
     </Protobuf>

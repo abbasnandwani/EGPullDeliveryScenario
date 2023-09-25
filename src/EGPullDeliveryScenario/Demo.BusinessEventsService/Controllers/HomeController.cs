@@ -40,7 +40,7 @@ namespace Demo.BusinessEventsService.Controllers
                 {
                     _dbContext.ClientTransactions.Add(new ClientTransaction
                     {
-                        ClientId = model.ClientId,
+                        ClientId = new Random().Next(1, 4),
                         Amount = new Random().NextDouble() * 1000,
                         TransactionDateTime = DateTime.Now,
                         TransactionId = Guid.NewGuid().ToString()
