@@ -1,7 +1,7 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using System;
 
-namespace Demo.Consumer
+namespace Demo.EventConsumer
 {
     public class EventInfo
     {

@@ -18,8 +18,6 @@ namespace Demo.BusinessEventsService.Services
         public override async Task GetTransactionStream(EventRequestSetting requestSetting, IServerStreamWriter<TransactionEventData> responseStream,
             ServerCallContext context)
         {
-            var transactions = _dbContext.ClientTransactions.ToList();
-
             var clientTransactions = _dbContext.ClientTransactions
              .Where(t => t.EventDispatched == false)
              .OrderBy(t => t.TransactionDateTime)

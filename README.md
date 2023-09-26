@@ -8,6 +8,7 @@
 
 ## Solution  
 <p>In our solution we will be using Azure Functions and Event Grid to consume events. Using claim check pattern will be better option as payload size of event raised by APS system can be more than 1 MB.</p>
-<p>Azure Function will subscribe to APS gRPC based endpoint and save event payload in Blob storage and push event containg payload file name to Event Grid custom topic. These events will then be consumed and processed by second function using pull delivery.</p>
-<p>Note: For the sake of demonstration, in our solution we will be using SQLite (in-memory) to store infomration and test.</p>
+<p>There will be two Azure Function apps. Function App for Event Orchestration will subscribe to APS gRPC based endpoint and save event payload in Blob storage and push event containg payload file name to Event Grid's custom topic. These events will then be consumed and processed by second function app using pull delivery.</p>
+
+<p><b>Note:</b> For the sake of demonstration, in our solution we will be using SQLite (in-memory) to store infomration.</p>
 <img src="./Architecture.jpg"/>

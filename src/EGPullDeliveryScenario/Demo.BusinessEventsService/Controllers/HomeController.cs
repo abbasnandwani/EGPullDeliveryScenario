@@ -41,7 +41,7 @@ namespace Demo.BusinessEventsService.Controllers
                     _dbContext.ClientTransactions.Add(new ClientTransaction
                     {
                         ClientId = new Random().Next(1, 4),
-                        Amount = new Random().NextDouble() * 1000,
+                        Amount = Math.Round(new Random().NextDouble() * 1000,2),
                         TransactionDateTime = DateTime.Now,
                         TransactionId = Guid.NewGuid().ToString()
                     });
