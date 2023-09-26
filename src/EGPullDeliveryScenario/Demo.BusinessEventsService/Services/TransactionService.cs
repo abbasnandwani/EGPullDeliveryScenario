@@ -37,7 +37,8 @@ namespace Demo.BusinessEventsService.Services
                     Transactionid = clientTransaction.TransactionId,
                     Clientid = clientTransaction.ClientId.ToString(),
                     Amount = clientTransaction.Amount,
-                    EventSource = (clientTransaction.ClientId == 3) ? "Demo.NonBusinessEvent" : "Demo.BusinessEvent"
+                    //EventSource = (clientTransaction.ClientId == 3) ? "Demo.NonBusinessEvent" : "Demo.BusinessEvent"
+                    EventSource = "Demo.BusinessEvent"
                 };
 
                 clientTransaction.EventDispatched = true;

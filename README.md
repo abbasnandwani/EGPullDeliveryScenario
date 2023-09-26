@@ -12,3 +12,19 @@
 
 <p><b>Note:</b> For the sake of demonstration, in our solution we will be using SQLite (in-memory) to store infomration.</p>
 <img src="./Architecture.jpg"/>
+
+## Prerequistes
+* Azure Subscription
+* Visual Studio 2022
+## Azure Components
+* App Service
+* Function App
+* Event Grid
+* Storage account
+
+## Solution Layout
+|Project|Details|
+|-----|-----|
+|Demo.BusinessEventsService|Asp.Net MVC which implements gRPC based service and User Infterface for management.|
+|Demo.EventOrchestrator|Function app which pulls events from Demo gRPC service and raise events in Event Grid.|
+|Demo.EventConsumer|Function app which demonstrates pull delivery functionality of Event Grid.|
