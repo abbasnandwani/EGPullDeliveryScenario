@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",    
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "AEG_TOPIC_ENDPOINT": "",
+    "AEG_TOPIC_KEY": "",
+    "AEG_TOPIC_NAME": "",
+    "AEG_TOPIC_SUBSCRIPTION": "",
+    "BLOB_CONNSTR": "",
+    "BLOB_CONTAINER_NAME": ""
+  }
+}
