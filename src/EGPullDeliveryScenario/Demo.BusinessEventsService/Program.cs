@@ -67,22 +67,6 @@ namespace Demo.BusinessEventsService
 
             db.Clients.AddRange(clients);
 
-
-            //create dummay transactions
-            //List<ClientTransaction> clientTransactions = new List<ClientTransaction>();
-
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    db.ClientTransactions.Add(new ClientTransaction
-            //    {
-            //        ClientId = new Random().Next(1,4),
-            //        Amount = new Random().NextDouble() * 1000,
-            //        TransactionDateTime = DateTime.Now,
-            //        TransactionId = Guid.NewGuid().ToString()
-            //    });
-            //}
-
-
             db.SaveChanges();
         }
     }

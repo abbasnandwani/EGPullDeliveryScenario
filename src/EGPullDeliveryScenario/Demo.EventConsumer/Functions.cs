@@ -15,7 +15,7 @@ namespace Demo.EventConsumer
     {
         [FunctionName("EventGridPullScheduleTrigger")]
         public static async Task EventGridPullScheduleTrigger([TimerTrigger("*/20 * * * * *")] TimerInfo myTimer,
-             [Blob("eventfiles", Connection = "BLOB_CONNSTR")] BlobContainerClient blobContainerClient,
+             [Blob("%BLOB_CONTAINER_NAME%", Connection = "BLOB_CONNSTR")] BlobContainerClient blobContainerClient,
              ILogger log)
         {
             log.LogInformation($"EventGridPullScheduleTrigger Triggered at {DateTime.Now}");

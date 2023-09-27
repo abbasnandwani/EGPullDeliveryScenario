@@ -24,11 +24,11 @@ namespace Demo.EventOrchestrator
     {
         [FunctionName("EventOrchestrator")]
         public async Task EventOrchestrator([TimerTrigger("*/10 * * * * *")] TimerInfo myTimer,
-            [Blob("eventfiles", Connection = "BLOB_CONNSTR")] BlobContainerClient blobContainerClient,
+            //[Blob("eventfiles", Connection = "BLOB_CONNSTR")] BlobContainerClient blobContainerClient,
+            [Blob("%BLOB_CONTAINER_NAME%", Connection = "BLOB_CONNSTR")] BlobContainerClient blobContainerClient,
             ILogger log)
         {
             log.LogInformation($"Executing function to fetch events at: {DateTime.Now}");
-
 
             string serviceApiEndPoint = Environment.GetEnvironmentVariable("SERVICE_API_ENDPOINT");
             string topicEndpoint = Environment.GetEnvironmentVariable("AEG_TOPIC_ENDPOINT");
@@ -87,6 +87,6 @@ namespace Demo.EventOrchestrator
             }
 
             log.LogInformation($"Fetching events complete.");
-        }        
+        }
     }
 }
