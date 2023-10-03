@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Items", "Items", "{16453C47
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.EventConsumer", "Demo.EventConsumer\Demo.EventConsumer.csproj", "{B2688504-4955-4347-AD89-6DA5ACFCF6CC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.EventOrchestrator", "Demo.EventOrchestrator\Demo.EventOrchestrator.csproj", "{61FBF1B4-0EAC-4334-B37B-9B0704E38E2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.EventIngestor", "Demo.EventIngestor\Demo.EventIngestor.csproj", "{3B1F6359-365B-4B29-A2E5-457166716616}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,10 +28,10 @@ Global
 		{B2688504-4955-4347-AD89-6DA5ACFCF6CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2688504-4955-4347-AD89-6DA5ACFCF6CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2688504-4955-4347-AD89-6DA5ACFCF6CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{61FBF1B4-0EAC-4334-B37B-9B0704E38E2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{61FBF1B4-0EAC-4334-B37B-9B0704E38E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{61FBF1B4-0EAC-4334-B37B-9B0704E38E2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{61FBF1B4-0EAC-4334-B37B-9B0704E38E2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B1F6359-365B-4B29-A2E5-457166716616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B1F6359-365B-4B29-A2E5-457166716616}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B1F6359-365B-4B29-A2E5-457166716616}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B1F6359-365B-4B29-A2E5-457166716616}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

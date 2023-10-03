@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Demo.Consumer": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7201"
+    }
+  }
+}
