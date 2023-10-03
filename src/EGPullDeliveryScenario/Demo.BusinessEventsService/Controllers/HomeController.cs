@@ -2,8 +2,9 @@
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using TransactionEvent;
+using APSEvent;
 
 namespace Demo.BusinessEventsService.Controllers
 {
@@ -25,6 +26,8 @@ namespace Demo.BusinessEventsService.Controllers
 
             ViewBag.ListClients = _dbContext.Clients.Select(c => new SelectListItem { Text = c.Name, Value = c.Id.ToString() }).ToList();
 
+            model.GenerateRandom = true;
+
             return View(model);
         }
 
@@ -36,25 +39,25 @@ namespace Demo.BusinessEventsService.Controllers
 
             if (model.GenerateRandom)
             {
-                for(int i=0; i<model.NumberOfTransactions; i++)
+                for (int i = 0; i < model.NumberOfTransactions; i++)
                 {
-                    _dbContext.ClientTransactions.Add(new ClientTransaction
+                    _dbContext.PaymentInstructionEvents.Add(new PaymentInstructionEvent
                     {
                         ClientId = new Random().Next(1, 4),
-                        Amount = Math.Round(new Random().NextDouble() * 1000,2),
-                        TransactionDateTime = DateTime.Now,
-                        TransactionId = Guid.NewGuid().ToString()
+                        Amount = Math.Round(new Random().NextDouble() * 1000, 2),
+                        EventDateTime = DateTime.Now,
+                        EventId = Guid.NewGuid().ToString()
                     });
                 }
             }
             else
             {
-                _dbContext.ClientTransactions.Add(new ClientTransaction
+                _dbContext.PaymentInstructionEvents.Add(new PaymentInstructionEvent
                 {
                     ClientId = model.ClientId,
                     Amount = model.Amount,
-                    TransactionDateTime = DateTime.Now,
-                    TransactionId = Guid.NewGuid().ToString()
+                    EventDateTime = DateTime.Now,
+                    EventId = Guid.NewGuid().ToString()
                 });
             }
 
@@ -74,46 +77,51 @@ namespace Demo.BusinessEventsService.Controllers
             return View(clients);
         }
 
-        public IActionResult ViewTransactions()
+        public IActionResult ViewEvents()
         {
-            var transactions = _dbContext.ClientTransactions.ToList();
+            var transactions = _dbContext.PaymentInstructionEvents.Include(a => a.Client).ToList();
             return View(transactions);
         }
 
         public IActionResult TestEventDispatch(int numevents)
         {
-            var transactions = _dbContext.ClientTransactions.ToList();
+            var transactions = _dbContext.PaymentInstructionEvents.Include(a => a.Client).ToList();
 
-            var model = new List<TransactionEventData>();
+            var model = new List<EventData>();
 
-            var clientTransactions = _dbContext.ClientTransactions
+            var instructions = _dbContext.PaymentInstructionEvents
+             .Include(t => t.Client)
              .Where(t => t.EventDispatched == false)
-             .OrderBy(t => t.TransactionDateTime)
+             .OrderBy(t => t.EventDateTime)
              .Take(numevents);
 
             var i = 0;
-            foreach (var clientTransaction in clientTransactions)
+            foreach (var instruction in instructions)
             {
                 if (i >= numevents)
                 {
                     break;
                 }
 
-                var transaction = new TransactionEventData
+                var transaction = new EventData
                 {
-                    TransactionDateTime = Timestamp.FromDateTime(DateTime.SpecifyKind(clientTransaction.TransactionDateTime, DateTimeKind.Utc)),
-                    Transactionid = clientTransaction.TransactionId,
-                    Clientid = clientTransaction.ClientId.ToString(),
-                    Amount = clientTransaction.Amount
+                    EventDateTime = Timestamp.FromDateTime(DateTime.SpecifyKind(instruction.EventDateTime, DateTimeKind.Utc)),
+                    Eventid = instruction.EventId,
+                    Clientid = instruction.ClientId.ToString(),
+                    Amount = instruction.Amount,
+                    Clientname = instruction.Client.Name,
+                    //EventSource = (clientTransaction.ClientId == 3) ? "Demo.NonBusinessEvent" : "Demo.BusinessEvent"
+                    EventSource = "Contose.APS",
+                    EventType = "APS.PaymentInstruction"
                 };
 
                 model.Add(transaction);
 
-                clientTransaction.EventDispatched = true;
+                instruction.EventDispatched = true;
                 _dbContext.SaveChanges();
                 i++;
-            }   
-                       
+            }
+
 
             return View(model);
         }

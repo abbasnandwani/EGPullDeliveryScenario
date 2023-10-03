@@ -36,8 +36,8 @@
     <Folder Include="Protos\" />
   </ItemGroup>
   <ItemGroup>
-    <Protobuf Include="..\Protofile\TransactionEvents.proto" GrpcServices="Client">
-      <Link>Protos\TransactionEvents.proto</Link>
+    <Protobuf Include="..\Protofile\APSEvents.proto" GrpcServices="Client">
+      <Link>Protos\APSEvents.proto</Link>
     </Protobuf>
   </ItemGroup>
 </Project>

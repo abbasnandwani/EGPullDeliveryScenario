@@ -5,15 +5,16 @@ namespace Demo.EventConsumer
 {
     public class EventInfo
     {
-        public string TransactionId { get; set; }
+        public string EventId { get; set; }
         public string FileName { get; set; }
     }
 
-    public class TransactionInfo
+    public class EventPayload
     {
-        public string TransactionId { get; set; }
+        public string EventId { get; set; }
         public int ClientId { get; set; }
+        public string ClientName { get; set; }
         public double Amount { get; set; }
-        public Timestamp TransactionDateTime { get; set; }
+        public Timestamp EventDateTime { get; set; }
     }
 }

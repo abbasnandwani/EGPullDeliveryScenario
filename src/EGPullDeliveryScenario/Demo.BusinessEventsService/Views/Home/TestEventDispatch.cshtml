@@ -1,4 +1,4 @@
-﻿@model List<TransactionEvent.TransactionEventData>
+﻿@model List<APSEvent.EventData>
 
 @{
     ViewData["Title"] = "Test Transaction Events";
@@ -11,14 +11,14 @@
             <th>Id</th>
             <th>Client Id</th>
             <th>Amount</th>
-            <th>Transaction Date Time</th>            
+            <th>Event Date Time</th>            
         </tr>
         @foreach (var tran in Model)
         {
             <tr>
-                <td>@tran.Transactionid</td>
+                <td>@tran.Eventid</td>
                 <td>@tran.Clientid</td>
-                <td>@tran.TransactionDateTime.ToDateTime()</td>
+                <td>@tran.EventDateTime.ToDateTime()</td>
 
             </tr>
         }

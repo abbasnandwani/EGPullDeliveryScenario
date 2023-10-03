@@ -5,38 +5,44 @@
 }
 
 <div class="text-left">
-    <h1 class="display-4">Demo</h1>
+    <h1 class="display-4">Raise Payment Instruction</h1>
 
-    <p><b>Raise Event Form</b></p>
     <form method="post">
         <table>
+            <tr>
+                <td colspan="2"><p><b>Raise Payment Instruction for specfic customer</b></p></td>
+            </tr>
             <tr>
                 <td>@Html.LabelFor(m => m.ClientId)</td>
                 <td>@Html.DropDownListFor(m => m.ClientId, (IEnumerable<SelectListItem>) ViewBag.ListClients)</td>
             </tr>
             <tr>
-                <td> @Html.LabelFor(m => m.Amount)</td>
+                <td>@Html.LabelFor(m => m.Amount)</td>
                 <td>@Html.TextBoxFor(m => m.Amount)</td>
             </tr>
+            <tr><td colspan="2"><input type="submit" value="Submit" /></td></tr>           
+        </table>
+
+    </form>
+    <hr />
+    <form method="post">
+        @Html.HiddenFor(m=>m.GenerateRandom)
+        <table>
             <tr>
-                <td colspan="2"><hr/></td>
+                <td colspan="2">
+                    <p><b>Raise Bulk Payment instruction</b></p><br />
+                    <b>Note:</b> Use this form is for testing purposes only to raise bulk payments instructions for testing. This will randomly select customer and amount to generate payment instructions.
+                </td>
             </tr>
+            @* <tr>
+            <td> @Html.LabelFor(m => m.GenerateRandom)</td>
+            <td>@Html.CheckBoxFor(m => m.GenerateRandom)</td>
+            </tr> *@
             <tr>
-                <td colspan="2"><b>OR</b></td>
-            </tr>
-            <tr>
-                <td colspan="2"><hr /></td>
-            </tr>
-            <tr>
-                <td> @Html.LabelFor(m => m.GenerateRandom)</td>
-                <td>@Html.CheckBoxFor(m => m.GenerateRandom)</td>
-            </tr>
-            <tr>
-                <td> @Html.LabelFor(m => m.NumberOfTransactions)</td>
+                <td>@Html.LabelFor(m => m.NumberOfTransactions)</td>
                 <td>@Html.TextBoxFor(m => m.NumberOfTransactions)</td>
             </tr>
-
-            <tr><td colspan="2"><input type="submit" value="Raise Event" /></td></tr>
+            <tr><td colspan="2"><input type="submit" value="Submit" /></td></tr>
         </table>
     </form>
 </div>

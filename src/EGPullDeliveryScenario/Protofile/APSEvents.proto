@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "APSEvent";
+
+package APSEvent;
+
+// The greeting service definition.
+service APSEvents {
+  rpc GetTransactionStream (EventRequestSetting) returns (stream EventData );
+}
+
+message EventData {
+  string eventid = 1;
+  string clientid = 2;
+  string clientname = 3;
+  double amount = 4;
+  google.protobuf.Timestamp eventDateTime = 5;
+  string EventSource = 6;
+  string EventType = 7;
+  
+}
+
+message EventRequestSetting {
+  int32 maxEvents = 1;
+  
+}

@@ -24,6 +24,7 @@ namespace Demo.EventConsumer
             string topicKey = Environment.GetEnvironmentVariable("AEG_TOPIC_KEY");
             string topicName = Environment.GetEnvironmentVariable("AEG_TOPIC_NAME");
             string subscription = Environment.GetEnvironmentVariable("AEG_TOPIC_SUBSCRIPTION");
+            int maxEvents = int.Parse(Environment.GetEnvironmentVariable("MAX_EVENTS")); //maximum events to be fetched from event grid custom topic
 
             List<EventInfo> acknowledgedEvents = new List<EventInfo>();
             List<EventInfo> releasedEvents = new List<EventInfo>();
@@ -34,7 +35,7 @@ namespace Demo.EventConsumer
 
             // Receive the published CloudEvents
             log.LogInformation($"Pulling events (max 2 per call)....");
-            var resultRes = await client.ReceiveCloudEventsAsync(topicName, subscription, 2, TimeSpan.FromSeconds(20)); //receive 2 events at a time
+            var resultRes = await client.ReceiveCloudEventsAsync(topicName, subscription, maxEvents, TimeSpan.FromSeconds(20));
             ReceiveResult result = resultRes.Value;
 
             log.LogInformation($"Received Response. Total events {result.Value.Count}...");
@@ -53,8 +54,8 @@ namespace Demo.EventConsumer
 
                 // The lock token is used to acknowledge, reject or release the event                
 
-                // we are only interested in events from source Demo.BusinessEvent
-                if (@event.Source == "Demo.BusinessEvent")
+                // we are only interested in events from source Contoso.APS
+                if (@event.Source == "Contoso.APS")
                 {
 
                     var blob = blobContainerClient.GetBlobClient(info.FileName);
@@ -63,12 +64,13 @@ namespace Demo.EventConsumer
                     {
                         var blobResult = await blobContainerClient.GetBlobClient(info.FileName).DownloadContentAsync();
 
-                        var transactionInfo = JsonConvert.DeserializeObject<TransactionInfo>(blobResult.Value.Content.ToString());
+                        var eventPayload = JsonConvert.DeserializeObject<EventPayload>(blobResult.Value.Content.ToString());
 
-                        log.LogInformation($"File Contents:\n ClientId: {transactionInfo.ClientId}" +
-                            $"\nTransactionId: {transactionInfo.TransactionId}" +
-                            $"\nAmount: {transactionInfo.Amount}" +
-                            $"\nTransactionDateTime: {transactionInfo.TransactionDateTime}");
+                        log.LogInformation($"\nFile Contents:\n ClientId: {eventPayload.ClientId}" +
+                            $"\nClient Name: {eventPayload.ClientName}" +
+                            $"\nEvent Id: {eventPayload.EventId}" +
+                            $"\nAmount: {eventPayload.Amount}" +
+                            $"\nEvent DateTime: {eventPayload.EventDateTime}");
 
                         //acknowledge the event
                         AcknowledgeResult acknowledgeResult = await client.AcknowledgeCloudEventsAsync(topicName, subscription, new string[] { brokerProperties.LockToken });
@@ -78,6 +80,9 @@ namespace Demo.EventConsumer
                         {
                             log.LogInformation($"Successfully acknowledged");
                             acknowledgedEvents.Add(info);
+
+                            //delete the blob
+                            await blob.DeleteAsync();
                         }
                         else
                         {

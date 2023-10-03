@@ -1,13 +1,14 @@
 {
   "IsEncrypted": false,
   "Values": {
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",    
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "SERVICE_API_ENDPOINT": "",
     "AEG_TOPIC_ENDPOINT": "",
     "AEG_TOPIC_KEY": "",
     "AEG_TOPIC_NAME": "",
     "BLOB_CONNSTR": "",
-    "BLOB_CONTAINER_NAME": ""
+    "BLOB_CONTAINER_NAME": "",
+    "MAX_EVENTS": 20
   }
 }

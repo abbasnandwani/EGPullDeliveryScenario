@@ -29,11 +29,13 @@
 |Demo.EventOrchestrator|Function app which pulls events from Demo gRPC service and raise events in Event Grid.|
 |Demo.EventConsumer|Function app which demonstrates pull delivery functionality of Event Grid.|  
 ## Deployment  
-<p>Please note, you can run solution locally using Visual Studio 2022 without creating anyother resources. Hoeverever Event Grid is mandatory.</p>
-- Create Event Grid namespace custom events, topic and event subscription using following tutorials
-    - Create Event Grid namepsace for custom events <a href="https://learn.microsoft.com/en-us/azure/event-grid/event-grid-dotnet-get-started-pull-delivery#create-a-namespace-in-the-azure-portal">link</a>.
-    - Create a namespace topic <a href="https://learn.microsoft.com/en-us/azure/event-grid/event-grid-dotnet-get-started-pull-delivery#create-a-namespace-topic">link</a>.
-    - Create event subscription <a link="https://learn.microsoft.com/en-us/azure/event-grid/event-grid-dotnet-get-started-pull-delivery#create-an-event-subscription">link</a>.
+<p>Please note, you can run solution locally using Visual Studio 2022 without creating anyother resources. Hoeverever Event Grid is mandatory.</p>  
+
+- Create Event Grid namespace custom events, topic and event subscription using following tutorials  
+- Create Event Grid namepsace for custom events <a href="https://learn.microsoft.com/en-us/azure/event-grid/event-grid-dotnet-get-started-pull-delivery#create-a-namespace-in-the-azure-portal">link</a>.
+
+- Create a namespace topic <a href="https://learn.microsoft.com/en-us/azure/event-grid/event-grid-dotnet-get-started-pull-delivery#create-a-namespace-topic">link</a>.
+- Create event subscription <a link="https://learn.microsoft.com/en-us/azure/event-grid/event-grid-dotnet-get-started-pull-delivery#create-an-event-subscription">link</a>.
 - Create Storage account with blob container.
 - Creat App service.
 - Create 2 Function Apps, one for Demo.EventOrchestrator and another for Demo.EventConsumer.  

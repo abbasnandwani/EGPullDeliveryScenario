@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
-using static TransactionEvent.TransactionEvents;
+using static APSEvent.APSEvents;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
@@ -17,6 +17,7 @@ using Azure.Messaging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualBasic;
+using APSEvent;
 
 namespace Demo.EventOrchestrator
 {
@@ -24,7 +25,6 @@ namespace Demo.EventOrchestrator
     {
         [FunctionName("EventOrchestrator")]
         public async Task EventOrchestrator([TimerTrigger("*/10 * * * * *")] TimerInfo myTimer,
-            //[Blob("eventfiles", Connection = "BLOB_CONNSTR")] BlobContainerClient blobContainerClient,
             [Blob("%BLOB_CONTAINER_NAME%", Connection = "BLOB_CONNSTR")] BlobContainerClient blobContainerClient,
             ILogger log)
         {
@@ -34,9 +34,10 @@ namespace Demo.EventOrchestrator
             string topicEndpoint = Environment.GetEnvironmentVariable("AEG_TOPIC_ENDPOINT");
             string topicKey = Environment.GetEnvironmentVariable("AEG_TOPIC_KEY");
             string topicName = Environment.GetEnvironmentVariable("AEG_TOPIC_NAME");
+            int maxEvents = int.Parse(Environment.GetEnvironmentVariable("MAX_EVENTS"));
 
             using var channel = GrpcChannel.ForAddress(serviceApiEndPoint);
-            var client = new TransactionEventsClient(channel);
+            var client = new APSEventsClient(channel);
 
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
@@ -48,9 +49,9 @@ namespace Demo.EventOrchestrator
             EventGridClient egClient = new EventGridClient(new Uri(topicEndpoint), new AzureKeyCredential(topicKey));
 
             //create event request setting
-            TransactionEvent.EventRequestSetting requestSetting = new TransactionEvent.EventRequestSetting
+            APSEvent.EventRequestSetting requestSetting = new APSEvent.EventRequestSetting
             {
-                MaxEvents = 2
+                MaxEvents = maxEvents
             };
 
             log.LogInformation($"Requesting to fetch max {requestSetting.MaxEvents} events from service endpoint");
@@ -59,13 +60,15 @@ namespace Demo.EventOrchestrator
 
             try
             {
-                await foreach (var transactionEventData in streamingCall.ResponseStream.ReadAllAsync(cancellationToken: cts.Token))
+                List<EventData> events = new List<EventData>(); //variable to hold events for display purpose
+
+                await foreach (var eventData in streamingCall.ResponseStream.ReadAllAsync(cancellationToken: cts.Token))
                 {
-                    log.LogInformation($"Fetch event:\nTran Datetime: {transactionEventData.TransactionDateTime.ToDateTime():s} | Event Source: {transactionEventData.EventSource}");
+                    log.LogInformation($"Fetching event:Event ID: {eventData.Eventid}");
 
-                    string jsonPayload = JsonConvert.SerializeObject(transactionEventData);
+                    string jsonPayload = JsonConvert.SerializeObject(eventData);
 
-                    string filename = $"event-{transactionEventData.Transactionid}.txt";
+                    string filename = $"event-{eventData.Eventid}.txt";
                     var blobClient = blobContainerClient.GetBlobClient(filename);
 
                     await blobClient.UploadAsync(BinaryData.FromString(jsonPayload), overwrite: true);
@@ -74,11 +77,33 @@ namespace Demo.EventOrchestrator
                     EventInfo info = new EventInfo();
 
                     info.FileName = filename;
-                    info.TransactionId = transactionEventData.Transactionid;
+                    info.EventId = eventData.Eventid;
 
-                    //CloudEvent cloudEvent = new CloudEvent("Demo.BusinessEvent", "Business.Event", info);
-                    CloudEvent cloudEvent = new CloudEvent(transactionEventData.EventSource, "Business.Event", info);
+                    CloudEvent cloudEvent = new CloudEvent(eventData.EventSource, "APS.Event", info);
                     await egClient.PublishCloudEventAsync(topicName, cloudEvent);
+
+                    events.Add(eventData);
+                }
+
+                if (events.Count > 0)
+                {
+                    log.LogInformation("=============================");
+                    foreach (var eventData in events)
+                    {
+                        
+                        log.LogInformation($"\nFetched event:\nEvent ID: {eventData.Eventid}" +
+                            $"\nClient ID: {eventData.Clientid}" +
+                            $"\nClient name: {eventData.Clientname}" +
+                            $"\nEvent Source: {eventData.EventSource}" +
+                            $"\nEvent Source: {eventData.EventType}" +
+                            $"\nEvent Datetime: {eventData.EventDateTime.ToDateTime():s}");
+                        
+                    }
+                    log.LogInformation("=============================");
+                }
+                else
+                {
+                    log.LogInformation("===No events found.===");
                 }
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)

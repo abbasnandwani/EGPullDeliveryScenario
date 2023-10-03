@@ -44,7 +44,7 @@ namespace Demo.BusinessEventsService
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
-            app.MapGrpcService<TransactionService>(); //map grpc service
+            app.MapGrpcService<APSEventService>(); //map grpc service
 
             app.Run();
         }
@@ -60,10 +60,10 @@ namespace Demo.BusinessEventsService
 
             List<Client> clients = new List<Client>();
 
-            clients.Add(new Client { Id = 1, Name = "Client 1" });
-            clients.Add(new Client { Id = 2, Name = "Client 2" });
-            clients.Add(new Client { Id = 3, Name = "Client 3" });
-            clients.Add(new Client { Id = 4, Name = "Client 4" });
+            clients.Add(new Client { Id = 1, Name = "Acme Corporation" });
+            clients.Add(new Client { Id = 2, Name = "Sparks Ltd." });
+            clients.Add(new Client { Id = 3, Name = "Contoso Ltd." });
+            clients.Add(new Client { Id = 4, Name = "Globex Corporation" });
 
             db.Clients.AddRange(clients);
 

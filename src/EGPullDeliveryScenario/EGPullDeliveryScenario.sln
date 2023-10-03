@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.BusinessEventsService"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Items", "Items", "{16453C47-EE7C-40C1-910D-B34BF4980BD9}"
 	ProjectSection(SolutionItems) = preProject
-		Protofile\TransactionEvents.proto = Protofile\TransactionEvents.proto
+		Protofile\APSEvents.proto = Protofile\APSEvents.proto
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.EventConsumer", "Demo.EventConsumer\Demo.EventConsumer.csproj", "{B2688504-4955-4347-AD89-6DA5ACFCF6CC}"

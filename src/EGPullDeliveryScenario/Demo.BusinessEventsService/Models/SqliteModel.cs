@@ -11,12 +11,12 @@ namespace Demo.BusinessEventsService.Models
         { }
 
         public DbSet<Client> Clients { get; set; }
-        public DbSet<ClientTransaction> ClientTransactions { get; set; }
+        public DbSet<PaymentInstructionEvent> PaymentInstructionEvents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ClientTransaction>()
-                .HasKey(c => c.TransactionId);
+            modelBuilder.Entity<PaymentInstructionEvent>()
+                .HasKey(c => c.EventId);
         }
     }
 
@@ -26,15 +26,15 @@ namespace Demo.BusinessEventsService.Models
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public List<ClientTransaction> Transactions { get; } = new();
+        public List<PaymentInstructionEvent> PaymentInstructionEvents { get; } = new();
     }
 
-    public class ClientTransaction
+    public class PaymentInstructionEvent
     {
-        public string TransactionId { get; set; }
+        public string EventId { get; set; }
         public int ClientId { get; set; }
         public double Amount { get; set; }
-        public DateTime TransactionDateTime { get; set; }
+        public DateTime EventDateTime { get; set; }
 
         public bool EventDispatched { get; set; }
 

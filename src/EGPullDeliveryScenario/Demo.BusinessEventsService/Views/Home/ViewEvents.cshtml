@@ -1,0 +1,30 @@
+﻿@model List<Demo.BusinessEventsService.Models.PaymentInstructionEvent>
+
+@{
+    ViewData["Title"] = "View Events Status";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Event Collection Status</h1>
+    <table class="table">
+        <tr>
+            <th>Event Id</th>
+            <th>Customer Id</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Event Date Time</th>
+            <th>Event Collected</th>
+        </tr>
+        @foreach (var tran in Model)
+        {
+            <tr>
+                <td>@tran.EventId</td>
+                <td>@tran.ClientId</td>
+                <td>@tran.Client.Name</td>
+                <td>@tran.Amount</td>
+                <td>@tran.EventDateTime</td>
+                <td>@tran.EventDispatched</td>
+            </tr>
+        }
+    </table>
+</div>
