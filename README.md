@@ -76,11 +76,13 @@
 * <a href="https://learn.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal">Creats Storage Account.</a>
 * <a href="https://learn.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-portal#create-a-container">Create Container.</a>
 * Create and Deploy App Service
-    * <a href="https://learn.microsoft.com/en-us/training/modules/host-a-web-app-with-azure-app-service/3-exercise-create-a-web-app-in-the-azure-portal?pivots=csharp">Create App service (.Net 6).</a>
+    * Follow <a href="https://learn.microsoft.com/en-us/training/modules/host-a-web-app-with-azure-app-service/3-exercise-create-a-web-app-in-the-azure-portal?pivots=csharp">Create App service (.Net 6).</a> to create app service. Make sure you create app service for Linux Plan.
+    * Under Configuration->General settings, make sure to enable select "2.0" for "HTTP version" and select "On" for "HTTP 2.0 Proxy"<br/><img src="images/WebAppConfiguration_GeneralSettings.jpg"/>
+    * Under Configuration->Application setting, add "New application setting" as per image below.<br/><img src="images/WebAppConfiguration_AppSettings.jpg"/>
     * Set all environment variables.
     * Once creaeted, deploy the Demo.BusinessEventsService project. Follow <a href="https://learn.microsoft.com/en-us/azure/app-service/quickstart-dotnetcore?tabs=net70&pivots=development-environment-vs#2-publish-your-web-app">Deploy an ASP.NET web app</a> to deploy using Visual Studio 2022. 
-* <a href="">Create 2 Function Apps, one for Demo.EventIngestor and another for Demo.EventConsumer and deploy.
-   * Create function app following <a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-function-app-portal#create-a-function-app">Create your first function in the Azure portal</a>
+* Create 2 Function Apps, one for Demo.EventIngestor and another for Demo.EventConsumer and deploy.
+   * Create function app following <a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-function-app-portal#create-a-function-app">Create your first function in the Azure portal</a>. Make sure to enable application insights to log out information.
    * Set all environment variables.
    * Deploy function to Azure following <a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-vs?tabs=isolated-process#publish-to-azure">Publish FUnction to Azure</a>
 
@@ -94,11 +96,14 @@
     <img src="./images/ScreenEventCollectionStatus.jpg" /><br/>
 
 3. <b>Event Ingestor</b>
-   <p>Once you have raised event you can view the logging information in portal for function app or if running locally then logging information will be displayed in the console. Below screen shot which shows logging information.</p>
+   <p>Once you have raised event you can view the logging information in portal for function app. You can go to function and click Monitor to view logging information as per below screen shot.<br/>
+   <img src="./images/FunctionMonitor.jpg"/></p>
+   <p>If running locally then logging information will be displayed in the console. Below screen shot which shows logging information.</p>
    <p>If you are testing locally make sure you have run Event Ingestor (Demo.EventIngestor).</p><br/>
-   <img src="./images/EventIngestor.jpg" />
+   <img src="./images/EventIngestor.jpg" />   
 
 4. <b>Event Consumer</b>
-   <p>Once Event Ingestor pushes events to Event Grid namespace custom event topic, Event Consumer will fetch the evetns. You can view the logging information in portal for function app or if running locally then logging information will be displayed in the console. Below screen shot which shows logging information.</p>
+   <p>Once Event Ingestor pushes events to Event Grid namespace custom event topic, Event Consumer will fetch the events. You can view the logging information in portal for function app by goining to Monitor section of the function. See point 3 above.</p>
+   <p>If running locally then logging information will be displayed in the console. Below screen shot which shows logging information.</p>
    <p>If you are testing locally make sure you have run Event Consumer (Demo.EventConsumer).</p><br/>
    <img src="./images/EventConsumer.jpg" />
