@@ -73,7 +73,7 @@
     * <a href="https://learn.microsoft.com/en-us/azure/event-grid/event-grid-dotnet-get-started-pull-delivery#create-a-namespace-in-the-azure-portal">Create Event Grid namepsace for custom events</a>.
 
     * <a href="https://learn.microsoft.com/en-us/azure/event-grid/event-grid-dotnet-get-started-pull-delivery#create-a-namespace-topic">Create a namespace topic</a>.
-    * <a link="https://learn.microsoft.com/en-us/azure/event-grid/event-grid-dotnet-get-started-pull-delivery#create-an-event-subscription">Create event subscription</a>.
+    * <a href="https://learn.microsoft.com/en-us/azure/event-grid/event-grid-dotnet-get-started-pull-delivery#create-an-event-subscription">Create event subscription</a>.
 * <a href="https://learn.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal">Creats Storage Account.</a>
 * <a href="https://learn.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-portal#create-a-container">Create Container.</a>
 * Create and Deploy App Service
