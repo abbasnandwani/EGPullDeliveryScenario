@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Demo.Consumer": {
+    "Demo.EventIngestor": {
       "commandName": "Project",
       "commandLineArgs": "--port 7201"
     }
