@@ -72,8 +72,9 @@ namespace Demo.EventConsumer
                             $"\nAmount: {eventPayload.Amount}" +
                             $"\nEvent DateTime: {eventPayload.EventDateTime}");
 
-                        //acknowledge the event
-                        AcknowledgeResult acknowledgeResult = await client.AcknowledgeCloudEventsAsync(topicName, subscription, new string[] { brokerProperties.LockToken });
+                        //acknowledge the event                        
+                        AcknowledgeResult acknowledgeResult = await client.AcknowledgeCloudEventsAsync(topicName, subscription,
+                            new AcknowledgeOptions(new string[] { brokerProperties.LockToken }));
 
                         // Inspect the Acknowledge result
                         if (acknowledgeResult.SucceededLockTokens.Count > 0)
@@ -90,8 +91,8 @@ namespace Demo.EventConsumer
                             foreach (FailedLockToken failedLockToken in acknowledgeResult.FailedLockTokens)
                             {
                                 log.LogError($"Lock Token: {failedLockToken.LockToken}");
-                                log.LogError($"Error Code: {failedLockToken.ErrorCode}");
-                                log.LogError($"Error Description: {failedLockToken.ErrorDescription}");
+                                log.LogError($"Error Code: {failedLockToken.Error}");
+                                log.LogError($"Error Description: {failedLockToken.ToString}");
                             }
                         }
                     }
@@ -100,7 +101,7 @@ namespace Demo.EventConsumer
                         log.LogError($"Payload: {info.FileName} not found. Rejecting event.");
 
                         //reject event
-                        RejectResult rejectResult = await client.RejectCloudEventsAsync(topicName, subscription, new string[] { brokerProperties.LockToken });
+                        RejectResult rejectResult = await client.RejectCloudEventsAsync(topicName, subscription, new RejectOptions(new string[] { brokerProperties.LockToken }));
 
                         // Inspect the Reject result
                         if (rejectResult.SucceededLockTokens.Count > 0)
@@ -114,8 +115,8 @@ namespace Demo.EventConsumer
                             foreach (FailedLockToken failedLockToken in rejectResult.FailedLockTokens)
                             {
                                 log.LogError($"Lock Token: {failedLockToken.LockToken}");
-                                log.LogError($"Error Code: {failedLockToken.ErrorCode}");
-                                log.LogError($"Error Description: {failedLockToken.ErrorDescription}");
+                                log.LogError($"Error Code: {failedLockToken.Error}");
+                                log.LogError($"Error Description: {failedLockToken.ToString}");
                             }
                         }
                     }
@@ -124,7 +125,7 @@ namespace Demo.EventConsumer
                 {
                     //release the event for others to consume
                     log.LogInformation($"Releasing as source: {@event.Source}");
-                    ReleaseResult releaseResult = await client.ReleaseCloudEventsAsync(topicName, subscription, new string[] { brokerProperties.LockToken });
+                    ReleaseResult releaseResult = await client.ReleaseCloudEventsAsync(topicName, subscription, new ReleaseOptions(new string[] { brokerProperties.LockToken }));
 
                     // Inspect the Acknowledge result
                     if (releaseResult.SucceededLockTokens.Count > 0)
@@ -138,8 +139,8 @@ namespace Demo.EventConsumer
                         foreach (FailedLockToken failedLockToken in releaseResult.FailedLockTokens)
                         {
                             log.LogError($"Lock Token: {failedLockToken.LockToken}");
-                            log.LogError($"Error Code: {failedLockToken.ErrorCode}");
-                            log.LogError($"Error Description: {failedLockToken.ErrorDescription}");
+                            log.LogError($"Error Code: {failedLockToken.Error}");
+                            log.LogError($"Error Description: {failedLockToken.ToString}");
                         }
                     }
                 }
